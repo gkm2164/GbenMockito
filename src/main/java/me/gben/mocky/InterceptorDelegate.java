@@ -11,10 +11,14 @@ public class InterceptorDelegate {
             @FieldValue("interceptor") MockyInterceptor interceptor,
             @Origin Method invokedMethod,
             @AllArguments Object[] arguments) {
-        MatcherDetail<?>[] matchers = new MatcherDetail<?>[arguments.length];
+        MatcherDetail[] matchers = new MatcherDetail[arguments.length];
         if (Matchers.recordedMatcher.size() >= arguments.length) {
             for (int i = arguments.length - 1; i >= 0; i--) {
                 matchers[i] = Matchers.recordedMatcher.pop();
+            }
+        } else {
+            for (int i = 0; i < arguments.length; i++) {
+                matchers[i] = new MatcherDetail((t) -> true);
             }
         }
         return interceptor.invoke(mock, invokedMethod, arguments, matchers);

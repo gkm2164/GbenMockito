@@ -1,5 +1,7 @@
 package me.gben.mocky;
 
+import me.gben.functional.GbenStream;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -8,13 +10,13 @@ public class InvocationDetail<T> {
     private final String methodName;
     private final Object[] arguments;
     private final MatcherDetail[] matcherDetails;
-    private Object result;
+    private T result;
 
     public InvocationDetail(
             String methodName,
             Object[] arguments,
             Class<?> attachedClass,
-            MatcherDetail<?>[] matcherDetails
+            MatcherDetail[] matcherDetails
     ) {
         this.methodName = methodName;
         this.arguments = arguments;
@@ -22,13 +24,32 @@ public class InvocationDetail<T> {
         this.attachedClass = attachedClass;
     }
 
+    public InvocationDetail(
+            String methodName,
+            Object[] arguments,
+            Class<?> attachedClass,
+            MatcherDetail[] matcherDetails,
+            T result
+    ) {
+        this.methodName = methodName;
+        this.arguments = arguments;
+        this.matcherDetails = matcherDetails;
+        this.attachedClass = attachedClass;
+        this.result = result;
+    }
+
     public boolean testParams(Object[] arguments) {
-        for (int i = 0; i < arguments.length; i++) {
-            if (!this.matcherDetails[i].test(arguments[i])) {
-                return false;
-            }
-        }
-        return true;
+        assert arguments.length == this.matcherDetails.length;
+
+        GbenStream<MatcherDetail> matchers = GbenStream.of(Arrays.stream(matcherDetails));
+        GbenStream<Object> argsStream = GbenStream.of(Arrays.stream(arguments));
+
+        return matchers.zip(argsStream)
+                .allMatch(pair -> {
+            final MatcherDetail left = pair.getLeft();
+            final Object arg = pair.getRight();
+            return left.test(arg);
+        });
     }
 
     public void thenReturn(T t) {
@@ -36,7 +57,7 @@ public class InvocationDetail<T> {
     }
 
     public Object getResult() {
-        return result;
+        return this.result;
     }
 
     @Override
@@ -49,10 +70,7 @@ public class InvocationDetail<T> {
                 && Objects.equals(arguments.length, that.arguments.length);
     }
 
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(attachedClass, methodName);
-        result = 31 * result + Arrays.hashCode(arguments);
-        return result;
+    public void setResult(Object v) {
+        this.result = (T) v;
     }
 }
