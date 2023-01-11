@@ -2,6 +2,7 @@ package me.gben.functional;
 
 import lombok.experimental.Delegate;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
@@ -22,10 +23,14 @@ public class GbenStream<T> implements Stream<T> {
             builder.add(Pair.of(l.next(), r.next()));
         }
 
-        return GbenStream.of(builder.build());
+        return GbenStream.gbenStream(builder.build());
     }
 
-    public static <T> GbenStream<T> of(Stream<T> stream) {
+    public static <T> GbenStream<T> gbenStream(T[] arrs) {
+        return gbenStream(Arrays.stream(arrs));
+    }
+
+    public static <T> GbenStream<T> gbenStream(Stream<T> stream) {
         return new GbenStream<>(stream);
     }
 }

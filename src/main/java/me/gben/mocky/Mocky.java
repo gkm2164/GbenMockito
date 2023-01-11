@@ -7,7 +7,7 @@ public class Mocky {
         return realMocky.mock(t);
     }
 
-    public static <T> InvocationDetail<T> when(T methodCall) {
+    public static <T> OnGoingStubbing<T> when(T methodCall) {
         return realMocky.when(methodCall);
     }
 }

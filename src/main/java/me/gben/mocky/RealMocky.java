@@ -1,18 +1,14 @@
 package me.gben.mocky;
 
-import java.util.Stack;
-
 public class RealMocky {
-    private final Stack<InvocationDetail<?>> invocationDetailList = new Stack<>();
-
+    private final OnGoingStubbingPool onGoingStubbingPool = new OnGoingStubbingPool();
     private final MockCreator mockCreator = new ByteBuddyMockCreator();
+
     public <T> T mock(Class<T> mockTargetClass) {
-        return mockCreator.createMock(mockTargetClass, invocationDetailList);
+        return mockCreator.createMock(mockTargetClass, onGoingStubbingPool);
     }
 
-    public <T> InvocationDetail<T> when(T methodCall) {
-        @SuppressWarnings("unchecked")
-        InvocationDetail<T> ret = (InvocationDetail<T>) invocationDetailList.peek();
-        return ret;
+    public <T> OnGoingStubbing<T> when(T methodCall) {
+        return onGoingStubbingPool.peek();
     }
 }

@@ -6,8 +6,6 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import org.objenesis.ObjenesisStd;
 
-import java.util.Stack;
-
 import static java.lang.reflect.Modifier.PRIVATE;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 
@@ -15,7 +13,7 @@ public class ByteBuddyMockCreator implements MockCreator {
     private final ObjenesisStd objenesisStd = new ObjenesisStd();
 
     @Override
-    public <T> T createMock(Class<T> mockTargetClass, Stack<InvocationDetail<?>> invocationDetailList) {
+    public <T> T createMock(Class<T> mockTargetClass, OnGoingStubbingPool ongoingStubbingPool) {
         ByteBuddy byteBuddy = new ByteBuddy();
 
         Class<? extends T> classWithInterceptor = byteBuddy.subclass(mockTargetClass)
@@ -30,7 +28,7 @@ public class ByteBuddyMockCreator implements MockCreator {
 
         T mockTargetInstance = objenesisStd.newInstance(classWithInterceptor);
         ((MockyInterceptable)mockTargetInstance).setInterceptor(
-                new MockyInterceptor(invocationDetailList));
+                new MockyInterceptor(ongoingStubbingPool));
         return mockTargetInstance;
     }
 }

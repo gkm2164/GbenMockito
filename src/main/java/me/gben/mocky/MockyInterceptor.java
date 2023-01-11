@@ -1,14 +1,18 @@
 package me.gben.mocky;
 
+import me.gben.matchers.MatcherDetail;
+
 import java.lang.reflect.Method;
-import java.util.Stack;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class MockyInterceptor {
-    private final Stack<InvocationDetail<?>> recordedInvocationDetails;
-    private Object value;
+    private final OnGoingStubbingPool onGoingStubbingPool;
+    private Supplier<Object> latestValue;
 
-    public MockyInterceptor(Stack<InvocationDetail<?>> recordedInvocationDetails) {
-        this.recordedInvocationDetails = recordedInvocationDetails;
+    public MockyInterceptor(OnGoingStubbingPool onGoingStubbingPool) {
+        this.onGoingStubbingPool = onGoingStubbingPool;
     }
 
     public Object invoke(Object mock,
@@ -16,33 +20,34 @@ public class MockyInterceptor {
                          Object[] arguments,
                          MatcherDetail[] matchers) {
         String methodName = invokedMethod.getName();
-        InvocationDetail<?> invocationDetail = new InvocationDetail<>(
+        OnGoingStubbing<?> onGoingStubbing = new OnGoingStubbing<>(
                 methodName,
                 arguments,
                 mock.getClass(),
-                matchers,
-                value);
+                matchers);
 
-        return recordedInvocationDetails.stream()
-                .filter(invocationDetail::equals)
-                .filter(id -> id.testParams(arguments))
-                .findFirst()
-                .stream()
-                .peek(id -> {
-                    if (value != null) {
-                        id.setResult(value);
-                        this.value = null;
-                    }
-                })
-                .map(InvocationDetail::getResult)
-                .findFirst()
+        Optional<OnGoingStubbing<?>> output = onGoingStubbingPool.stream()
+                .filter(onGoingStubbing::equals)
+                .filter(id -> Arrays.equals(matchers, id.getMatchers()) || id.testParams(arguments))
+                .findFirst();
+
+        if (latestValue != null) {
+            onGoingStubbing.thenAnswer(latestValue);
+            output.ifPresent(stub -> stub.thenAnswer(latestValue));
+            this.latestValue = null;
+        }
+
+        output.ifPresent(OnGoingStubbing::touch);
+
+        return output.map(OnGoingStubbing::getResult)
+                .map(Supplier::get)
                 .orElseGet(() -> {
-                    recordedInvocationDetails.push(invocationDetail);
+                    onGoingStubbingPool.push(onGoingStubbing);
                     return invokedMethod.getDefaultValue();
                 });
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setLatestValue(Supplier<Object> latestValue) {
+        this.latestValue = latestValue;
     }
 }

@@ -1,5 +1,7 @@
 package me.gben.mocky;
 
+import me.gben.matchers.MatcherDetail;
+import me.gben.matchers.Matchers;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -10,17 +12,19 @@ public class InterceptorDelegate {
             @This Object mock,
             @FieldValue("interceptor") MockyInterceptor interceptor,
             @Origin Method invokedMethod,
-            @AllArguments Object[] arguments) {
-        MatcherDetail[] matchers = new MatcherDetail[arguments.length];
-        if (Matchers.recordedMatcher.size() >= arguments.length) {
+            @AllArguments final Object[] arguments) {
+        MatcherDetail[] matchers = null;
+        if (Matchers.recordedMatcher.size() != 0 && Matchers.recordedMatcher.size() != arguments.length) {
+            throw new IllegalStateException("Matchers are not matches with arguments");
+        }
+
+        if (Matchers.recordedMatcher.size() == arguments.length) {
+            matchers = new MatcherDetail[arguments.length];
             for (int i = arguments.length - 1; i >= 0; i--) {
                 matchers[i] = Matchers.recordedMatcher.pop();
             }
-        } else {
-            for (int i = 0; i < arguments.length; i++) {
-                matchers[i] = new MatcherDetail((t) -> true);
-            }
         }
+
         return interceptor.invoke(mock, invokedMethod, arguments, matchers);
     }
 }
