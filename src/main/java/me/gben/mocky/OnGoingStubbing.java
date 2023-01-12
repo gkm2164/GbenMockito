@@ -23,7 +23,7 @@ public class OnGoingStubbing<T> {
             String methodName,
             Object[] arguments,
             Class<?> attachedClass,
-            MatcherDetail[] matcherDetails
+            MatcherDetail<?>[] matcherDetails
     ) {
         this.methodName = methodName;
         this.arguments = arguments;
@@ -72,7 +72,7 @@ public class OnGoingStubbing<T> {
         this.latestTimestamp = Instant.now();
     }
 
-    public MatcherDetail[] getMatchers() {
+    public MatcherDetail<?>[] getMatchers() {
         return matcherDetails;
     }
 }
