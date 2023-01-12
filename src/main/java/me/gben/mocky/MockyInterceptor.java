@@ -4,12 +4,14 @@ import me.gben.matchers.MatcherDetail;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class MockyInterceptor {
     private final OnGoingStubbingPool onGoingStubbingPool;
-    private Supplier<Object> latestValue;
+    private Supplier<?> latestValue;
 
     public MockyInterceptor(OnGoingStubbingPool onGoingStubbingPool) {
         this.onGoingStubbingPool = onGoingStubbingPool;
@@ -18,7 +20,7 @@ public class MockyInterceptor {
     public Object invoke(Object mock,
                          Method invokedMethod,
                          Object[] arguments,
-                         MatcherDetail[] matchers) {
+                         MatcherDetail<?>[] matchers) {
         String methodName = invokedMethod.getName();
         OnGoingStubbing<?> onGoingStubbing = new OnGoingStubbing<>(
                 methodName,
@@ -26,14 +28,17 @@ public class MockyInterceptor {
                 mock.getClass(),
                 matchers);
 
-        Optional<OnGoingStubbing<?>> output = onGoingStubbingPool.stream()
+        List<OnGoingStubbing<?>> outputList = onGoingStubbingPool.stream()
                 .filter(onGoingStubbing::equals)
                 .filter(id -> Arrays.equals(matchers, id.getMatchers()) || id.testParams(arguments))
-                .findFirst();
+                .collect(Collectors.toList());
+
+        Optional<OnGoingStubbing<?>> output = outputList.stream().findFirst();
 
         if (latestValue != null) {
-            onGoingStubbing.thenAnswer(latestValue);
-            output.ifPresent(stub -> stub.thenAnswer(latestValue));
+            final Supplier<?> value = latestValue;
+            onGoingStubbing.thenAnswer(value::get);
+            output.ifPresent(stub -> stub.thenAnswer(value::get));
             this.latestValue = null;
         }
 
@@ -47,7 +52,7 @@ public class MockyInterceptor {
                 });
     }
 
-    public void setLatestValue(Supplier<Object> latestValue) {
+    public void setLatestValue(Supplier<?> latestValue) {
         this.latestValue = latestValue;
     }
 }

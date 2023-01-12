@@ -3,10 +3,10 @@ package me.gben.matchers;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode
-public class AnyValueWithinClassMatcher<T> implements MatcherDetail<T> {
+public class AnyValuesWithinTypeMatcher<T> implements MatcherDetail<T> {
     private final Class<T> clazz;
 
-    public AnyValueWithinClassMatcher(Class<T> clazz) {
+    public AnyValuesWithinTypeMatcher(Class<T> clazz) {
         this.clazz = clazz;
     }
 
