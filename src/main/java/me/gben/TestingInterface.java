@@ -11,4 +11,6 @@ public interface TestingInterface {
     BigInteger factorial(BigInteger n);
 
     BigInteger factorial(BigInteger acc, BigInteger n);
+
+    String numberCompare(Integer ge);
 }
