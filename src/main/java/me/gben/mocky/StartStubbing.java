@@ -1,16 +1,18 @@
 package me.gben.mocky;
 
-import java.util.function.Function;
+import me.gben.functional.ThrowableFunction;
+import org.objenesis.ObjenesisStd;
+
 import java.util.function.Supplier;
 
 public class StartStubbing {
-    private final Function<InvokeArgument, ?> result;
+    private final ThrowableFunction<InvokeArgument, ?> result;
 
     public StartStubbing(Supplier<?> result) {
         this.result = (args) -> result.get();
     }
 
-    public <T> StartStubbing(Function<InvokeArgument, T> behavior) {
+    public <T> StartStubbing(ThrowableFunction<InvokeArgument, T> behavior) {
         this.result = behavior;
     }
 
@@ -18,8 +20,16 @@ public class StartStubbing {
         return new StartStubbing(() -> value);
     }
 
-    public static <T> StartStubbing doAnswer(Function<InvokeArgument, T> behavior) {
+    public static <T> StartStubbing doAnswer(ThrowableFunction<InvokeArgument, T> behavior) {
         return new StartStubbing(behavior);
+    }
+
+    public static <T extends Throwable> StartStubbing doThrow(Class<T> cls) {
+        ObjenesisStd objenesisStd = new ObjenesisStd();
+        T throwable = objenesisStd.newInstance(cls);
+        return new StartStubbing((args) -> {
+            throw throwable;
+        });
     }
 
     public <U> U when(U value) {

@@ -1,12 +1,11 @@
 package me.gben.mocky;
 
 import lombok.ToString;
+import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 import static me.gben.functional.GbenStream.gbenStream;
 import static me.gben.functional.Pair.func;
@@ -18,7 +17,7 @@ public class OnGoingStubbing<T> {
     private final Object[] arguments;
     private final MatcherDetail[] matcherDetails;
     private Instant latestTimestamp;
-    private Function<InvokeArgument, Object> result;
+    private ThrowableFunction<InvokeArgument, Object> result;
 
     public OnGoingStubbing(
             String methodName,
@@ -43,15 +42,15 @@ public class OnGoingStubbing<T> {
                 .allMatch(func(MatcherDetail::test));
     }
 
-    public void thenAnswer(Function<InvokeArgument, ?> supplier) {
-        this.result = (Function<InvokeArgument, Object>) supplier;
+    public void thenAnswer(ThrowableFunction<InvokeArgument, ?> supplier) {
+        this.result = (ThrowableFunction<InvokeArgument, Object>) supplier;
     }
 
     public void thenReturn(T t) {
         this.result = (args) -> t;
     }
 
-    Function<InvokeArgument, Object> getResult() {
+    ThrowableFunction<InvokeArgument, Object> getResult() {
         return this.result;
     }
 

@@ -1,17 +1,17 @@
 package me.gben.mocky;
 
+import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MockyInterceptor {
     private final OnGoingStubbingPool onGoingStubbingPool;
-    private Function<InvokeArgument, ?> latestValue;
+    private ThrowableFunction<InvokeArgument, ?> latestValue;
 
     public MockyInterceptor(OnGoingStubbingPool onGoingStubbingPool) {
         this.onGoingStubbingPool = onGoingStubbingPool;
@@ -36,7 +36,7 @@ public class MockyInterceptor {
         Optional<OnGoingStubbing<?>> output = outputList.stream().findFirst();
 
         if (latestValue != null) {
-            final Function<InvokeArgument, ?> value = latestValue;
+            final ThrowableFunction<InvokeArgument, ?> value = latestValue;
             onGoingStubbing.thenAnswer(value);
             output.ifPresent(stub -> stub.thenAnswer(value));
             this.latestValue = null;
@@ -45,14 +45,20 @@ public class MockyInterceptor {
         output.ifPresent(OnGoingStubbing::touch);
 
         return output.map(OnGoingStubbing::getResult)
-                .map(result -> result.apply(new InvokeArgument(Arrays.asList(arguments))))
+                .map(result -> {
+                    try {
+                        return result.apply(new InvokeArgument(Arrays.asList(arguments)));
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .orElseGet(() -> {
                     onGoingStubbingPool.push(onGoingStubbing);
                     return invokedMethod.getDefaultValue();
                 });
     }
 
-    public void setLatestValue(Function<InvokeArgument, ?> latestValue) {
+    public void setLatestValue(ThrowableFunction<InvokeArgument, ?> latestValue) {
         this.latestValue = latestValue;
     }
 }
