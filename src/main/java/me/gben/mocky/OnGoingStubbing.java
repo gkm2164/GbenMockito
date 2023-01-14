@@ -4,8 +4,9 @@ import lombok.ToString;
 import me.gben.matchers.MatcherDetail;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import static me.gben.functional.GbenStream.gbenStream;
 import static me.gben.functional.Pair.func;
@@ -17,7 +18,7 @@ public class OnGoingStubbing<T> {
     private final Object[] arguments;
     private final MatcherDetail[] matcherDetails;
     private Instant latestTimestamp;
-    private Supplier<Object> result;
+    private Function<InvokeArgument, Object> result;
 
     public OnGoingStubbing(
             String methodName,
@@ -42,15 +43,15 @@ public class OnGoingStubbing<T> {
                 .allMatch(func(MatcherDetail::test));
     }
 
-    public void thenAnswer(Supplier<Object> supplier) {
-        this.result = supplier;
+    public void thenAnswer(Function<InvokeArgument, ?> supplier) {
+        this.result = (Function<InvokeArgument, Object>) supplier;
     }
 
     public void thenReturn(T t) {
-        this.result = () -> t;
+        this.result = (args) -> t;
     }
 
-    Supplier<Object> getResult() {
+    Function<InvokeArgument, Object> getResult() {
         return this.result;
     }
 

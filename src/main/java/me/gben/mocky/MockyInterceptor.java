@@ -6,12 +6,12 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MockyInterceptor {
     private final OnGoingStubbingPool onGoingStubbingPool;
-    private Supplier<?> latestValue;
+    private Function<InvokeArgument, ?> latestValue;
 
     public MockyInterceptor(OnGoingStubbingPool onGoingStubbingPool) {
         this.onGoingStubbingPool = onGoingStubbingPool;
@@ -36,23 +36,23 @@ public class MockyInterceptor {
         Optional<OnGoingStubbing<?>> output = outputList.stream().findFirst();
 
         if (latestValue != null) {
-            final Supplier<?> value = latestValue;
-            onGoingStubbing.thenAnswer(value::get);
-            output.ifPresent(stub -> stub.thenAnswer(value::get));
+            final Function<InvokeArgument, ?> value = latestValue;
+            onGoingStubbing.thenAnswer(value);
+            output.ifPresent(stub -> stub.thenAnswer(value));
             this.latestValue = null;
         }
 
         output.ifPresent(OnGoingStubbing::touch);
 
         return output.map(OnGoingStubbing::getResult)
-                .map(Supplier::get)
+                .map(result -> result.apply(new InvokeArgument(Arrays.asList(arguments))))
                 .orElseGet(() -> {
                     onGoingStubbingPool.push(onGoingStubbing);
                     return invokedMethod.getDefaultValue();
                 });
     }
 
-    public void setLatestValue(Supplier<?> latestValue) {
+    public void setLatestValue(Function<InvokeArgument, ?> latestValue) {
         this.latestValue = latestValue;
     }
 }
