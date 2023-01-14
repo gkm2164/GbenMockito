@@ -120,8 +120,31 @@ public class MockyTest {
             BigInteger acc = invoke.get(0);
             BigInteger elem = invoke.get(1);
             return ti.factorial(acc.multiply(elem), elem.subtract(BigInteger.ONE));
-        }).when(ti).factorial(any(), any());
+        }).when(ti).factorial(any(), gt(BigInteger.ZERO));
 
         assertEquals(BigInteger.valueOf(120), ti.factorial(BigInteger.ONE, BigInteger.valueOf(5)));
+    }
+
+    @Test
+    public void numeric_comparator_mock_test() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.numberCompare(lt(30))).thenReturn("Less than 30!");
+        when(ti.numberCompare(ge(30))).thenReturn("Greater or Equal 30!");
+
+        assertEquals("Less than 30!", ti.numberCompare(29));
+        assertEquals("Greater or Equal 30!", ti.numberCompare(31));
+    }
+
+    @Test
+    public void numeric_comparator_with_throw_test() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        doThrow(IllegalArgumentException.class).when(ti).numberCompare(le(0));
+        doAnswer(invoc -> invoc.get(0).toString()).when(ti).numberCompare(gt(0));
+
+        Throwable whatIgot = assertThrows(RuntimeException.class, () -> ti.numberCompare(-1));
+        assertTrue(whatIgot.getCause() instanceof IllegalArgumentException);
+        assertEquals("1", ti.numberCompare(1));
     }
 }
