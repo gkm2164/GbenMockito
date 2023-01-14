@@ -7,10 +7,19 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static me.gben.matchers.Matchers.*;
+import static me.gben.matchers.Matchers.any;
+import static me.gben.matchers.Matchers.anyInteger;
+import static me.gben.matchers.Matchers.anyString;
+import static me.gben.matchers.Matchers.eq;
+import static me.gben.matchers.Matchers.ge;
+import static me.gben.matchers.Matchers.gt;
+import static me.gben.matchers.Matchers.le;
+import static me.gben.matchers.Matchers.lt;
 import static me.gben.mocky.Mocky.mock;
 import static me.gben.mocky.Mocky.when;
-import static me.gben.mocky.StartStubbing.*;
+import static me.gben.mocky.StartStubbing.doAnswer;
+import static me.gben.mocky.StartStubbing.doReturn;
+import static me.gben.mocky.StartStubbing.doThrow;
 import static org.junit.Assert.*;
 
 public class MockyTest {
