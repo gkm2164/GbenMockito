@@ -6,7 +6,6 @@ import me.gben.matchers.Matchers;
 import net.bytebuddy.implementation.bind.annotation.*;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class InterceptorDelegate {
     @RuntimeType

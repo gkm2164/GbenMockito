@@ -10,9 +10,8 @@ import java.math.BigInteger;
 import static me.gben.matchers.Matchers.*;
 import static me.gben.mocky.Mocky.mock;
 import static me.gben.mocky.Mocky.when;
-import static me.gben.mocky.StartStubbing.doAnswer;
-import static me.gben.mocky.StartStubbing.doReturn;
-import static org.junit.Assert.assertEquals;
+import static me.gben.mocky.StartStubbing.*;
+import static org.junit.Assert.*;
 
 public class MockyTest {
     @Test
@@ -92,6 +91,24 @@ public class MockyTest {
         }).when(ti).factorial(any(BigInteger.class));
 
         assertEquals(BigInteger.valueOf(120), ti.factorial(BigInteger.valueOf(5)));
+    }
+
+    @Test
+    public void throw_exception_mock() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        doThrow(RuntimeException.class).when(ti).test();
+
+        Throwable t = null;
+
+        try {
+            ti.test();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            t = e;
+        }
+
+        assertNotNull("execution of function should throw exception", t);
     }
 
     @Test

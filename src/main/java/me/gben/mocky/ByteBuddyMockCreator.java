@@ -29,6 +29,7 @@ public class ByteBuddyMockCreator implements MockCreator {
         T mockTargetInstance = objenesisStd.newInstance(classWithInterceptor);
         ((MockyInterceptable)mockTargetInstance).setInterceptor(
                 new MockyInterceptor(ongoingStubbingPool));
+
         return mockTargetInstance;
     }
 }
