@@ -1,18 +1,15 @@
 package me.gben.mocky;
 
-import lombok.ToString;
 import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
 
 import java.lang.reflect.Method;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Objects;
 
 import static me.gben.functional.GbenStream.gbenStream;
 import static me.gben.functional.Pair.func;
 
-@ToString
 public class OnGoingStubbing<T> {
     private final Class<?> attachedClass;
     private final String methodName;
@@ -38,11 +35,6 @@ public class OnGoingStubbing<T> {
     }
 
     public boolean testParams(Object[] arguments) {
-        if (this.matcherDetails == null) {
-            return gbenStream(arguments).zip(gbenStream(this.arguments))
-                    .allMatch(func(Objects::equals));
-        }
-
         return gbenStream(matcherDetails).zip(gbenStream(arguments))
                 .allMatch(func(MatcherDetail::test));
     }

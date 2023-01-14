@@ -1,4 +1,6 @@
-package me.gben;
+package me.gben.mocky.interfaces;
+
+import me.gben.PolyType;
 
 import java.math.BigInteger;
 
