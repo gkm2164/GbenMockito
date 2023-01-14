@@ -20,7 +20,7 @@ public class MockyInterceptor {
     public Object invoke(Object mock,
                          Method invokedMethod,
                          Object[] arguments,
-                         MatcherDetail<?>[] matchers) {
+                         MatcherDetail<?>[] matchers) throws Throwable {
         String methodName = invokedMethod.getName();
         Class<?>[] argumentsTypes = invokedMethod.getParameterTypes();
         OnGoingStubbing<?> onGoingStubbing = new OnGoingStubbing<>(
@@ -46,18 +46,25 @@ public class MockyInterceptor {
 
         output.ifPresent(OnGoingStubbing::touch);
 
-        return output.map(OnGoingStubbing::getResult)
-                .map(result -> {
-                    try {
-                        return result.apply(new InvokeArgument(Arrays.asList(arguments)));
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .orElseGet(() -> {
-                    onGoingStubbingPool.push(onGoingStubbing);
-                    return invokedMethod.getDefaultValue();
-                });
+        try {
+            return output.map(OnGoingStubbing::getResult)
+                    .map(result -> {
+                        try {
+                            return result.apply(new InvokeArgument(Arrays.asList(arguments)));
+                        } catch (Throwable e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .orElseGet(() -> {
+                        onGoingStubbingPool.push(onGoingStubbing);
+                        return invokedMethod.getDefaultValue();
+                    });
+        } catch (RuntimeException e) {
+            if (e.getCause() != null) {
+                throw e.getCause();
+            }
+            throw e;
+        }
     }
 
     public void setLatestValue(ThrowableFunction<InvokeArgument, ?> latestValue) {
