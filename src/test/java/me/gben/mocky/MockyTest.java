@@ -133,8 +133,7 @@ public class MockyTest {
         doThrow(IllegalArgumentException.class).when(ti).numberCompare(le(0));
         doAnswer(invoc -> invoc.get(0).toString()).when(ti).numberCompare(gt(0));
 
-        Throwable whatIgot = assertThrows(RuntimeException.class, () -> ti.numberCompare(-1));
-        assertTrue(whatIgot.getCause() instanceof IllegalArgumentException);
+        assertThrows(IllegalArgumentException.class, () -> ti.numberCompare(-1));
         assertEquals("1", ti.numberCompare(1));
     }
 

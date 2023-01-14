@@ -13,7 +13,7 @@ public class InterceptorDelegate {
             @This Object mock,
             @FieldValue("interceptor") MockyInterceptor interceptor,
             @Origin Method invokedMethod,
-            @AllArguments final Object[] arguments) throws InterruptedException {
+            @AllArguments final Object[] arguments) throws Throwable {
         Thread.sleep(1);
         final MatcherDetail<?>[] matchers;
         if (Matchers.recordedMatcher.size() != 0) {
