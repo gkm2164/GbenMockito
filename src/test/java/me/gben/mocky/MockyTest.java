@@ -2,7 +2,7 @@ package me.gben.mocky;
 
 import me.gben.PolyTypeA;
 import me.gben.PolyTypeB;
-import me.gben.TestingInterface;
+import me.gben.mocky.interfaces.TestingInterface;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -98,17 +98,7 @@ public class MockyTest {
         TestingInterface ti = mock(TestingInterface.class);
 
         doThrow(RuntimeException.class).when(ti).test();
-
-        Throwable t = null;
-
-        try {
-            ti.test();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            t = e;
-        }
-
-        assertNotNull("execution of function should throw exception", t);
+        assertThrows(RuntimeException.class, ti::test);
     }
 
     @Test
@@ -146,5 +136,23 @@ public class MockyTest {
         Throwable whatIgot = assertThrows(RuntimeException.class, () -> ti.numberCompare(-1));
         assertTrue(whatIgot.getCause() instanceof IllegalArgumentException);
         assertEquals("1", ti.numberCompare(1));
+    }
+
+    @Test
+    public void argument_exact_match_test() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4("SomeValue")).thenReturn("Match SomeValue");
+        when(ti.test4(10)).thenReturn("Match 10");
+
+        assertEquals(ti.test4("SomeValue"), "Match SomeValue");
+        assertEquals(ti.test4(10), "Match 10");
+    }
+
+    @Test
+    public void invalid_matcher_usages_throw_error() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        assertThrows(IllegalStateException.class, () -> when(ti.test2("SomeValue", eq("Other"))));
     }
 }

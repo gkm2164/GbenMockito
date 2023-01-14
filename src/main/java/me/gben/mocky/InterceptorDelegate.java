@@ -18,6 +18,7 @@ public class InterceptorDelegate {
         final MatcherDetail<?>[] matchers;
         if (Matchers.recordedMatcher.size() != 0) {
             if (Matchers.recordedMatcher.size() != arguments.length) {
+                Matchers.recordedMatcher.clear();
                 throw new IllegalStateException("Matchers are not matches with arguments");
             } else {
                 matchers = new MatcherDetail[arguments.length];
