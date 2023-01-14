@@ -7,14 +7,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static me.gben.matchers.Matchers.any;
-import static me.gben.matchers.Matchers.anyInteger;
-import static me.gben.matchers.Matchers.anyString;
-import static me.gben.matchers.Matchers.eq;
-import static me.gben.matchers.Matchers.ge;
-import static me.gben.matchers.Matchers.gt;
-import static me.gben.matchers.Matchers.le;
-import static me.gben.matchers.Matchers.lt;
+import static me.gben.matchers.Matchers.*;
 import static me.gben.mocky.Mocky.mock;
 import static me.gben.mocky.Mocky.when;
 import static me.gben.mocky.StartStubbing.doAnswer;
@@ -162,5 +155,16 @@ public class MockyTest {
         TestingInterface ti = mock(TestingInterface.class);
 
         assertThrows(IllegalStateException.class, () -> when(ti.test2("SomeValue", eq("Other"))));
+    }
+
+    @Test
+    public void string_contains_mock_test() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4(contains("A"))).thenReturn("PartA");
+        when(ti.test4(contains("B"))).thenReturn("PartB");
+
+        assertEquals("PartA", ti.test4("ACDE"));
+        assertEquals("PartB", ti.test4("BCDE"));
     }
 }

@@ -15,6 +15,10 @@ public class Matchers {
         return "";
     }
 
+    public static String contains(String part) {
+        recordedMatcher.push(new StringContainsMatcher(part));
+        return "";
+    }
 
     public static int anyInteger() {
         recordedMatcher.push(new AnyValuesWithinTypeMatcher<>(Integer.class));
