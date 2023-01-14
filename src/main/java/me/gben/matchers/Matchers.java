@@ -10,15 +10,15 @@ public class Matchers {
         return null;
     }
 
-    public static <T> T anyString() {
+    public static String anyString() {
         recordedMatcher.push(new AnyValuesWithinTypeMatcher<>(String.class));
-        return null;
+        return "";
     }
 
 
-    public static <T> T anyInteger() {
+    public static int anyInteger() {
         recordedMatcher.push(new AnyValuesWithinTypeMatcher<>(Integer.class));
-        return null;
+        return 0;
     }
 
     public static <T> T eq(T value) {
