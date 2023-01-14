@@ -4,7 +4,9 @@ import lombok.ToString;
 import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static me.gben.functional.GbenStream.gbenStream;
@@ -14,6 +16,7 @@ import static me.gben.functional.Pair.func;
 public class OnGoingStubbing<T> {
     private final Class<?> attachedClass;
     private final String methodName;
+    private final Method invokeMethod;
     private final Object[] arguments;
     private final MatcherDetail[] matcherDetails;
     private Instant latestTimestamp;
@@ -21,11 +24,13 @@ public class OnGoingStubbing<T> {
 
     public OnGoingStubbing(
             String methodName,
+            Method invokeMethod,
             Object[] arguments,
             Class<?> attachedClass,
             MatcherDetail<?>[] matcherDetails
     ) {
         this.methodName = methodName;
+        this.invokeMethod = invokeMethod;
         this.arguments = arguments;
         this.matcherDetails = matcherDetails;
         this.attachedClass = attachedClass;
@@ -61,7 +66,7 @@ public class OnGoingStubbing<T> {
         OnGoingStubbing<?> that = (OnGoingStubbing<?>) o;
         return Objects.equals(attachedClass, that.attachedClass)
                 && Objects.equals(methodName, that.methodName)
-                && arguments.length == that.arguments.length;
+                && Objects.equals(invokeMethod, that.invokeMethod);
     }
 
     public Instant getLatestTimestamp() {

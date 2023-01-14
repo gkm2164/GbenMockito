@@ -22,8 +22,10 @@ public class MockyInterceptor {
                          Object[] arguments,
                          MatcherDetail<?>[] matchers) {
         String methodName = invokedMethod.getName();
+        Class<?>[] argumentsTypes = invokedMethod.getParameterTypes();
         OnGoingStubbing<?> onGoingStubbing = new OnGoingStubbing<>(
                 methodName,
+                invokedMethod,
                 arguments,
                 mock.getClass(),
                 matchers);
