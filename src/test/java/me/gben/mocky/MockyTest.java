@@ -5,22 +5,25 @@ import me.gben.PolyTypeB;
 import me.gben.mocky.interfaces.TestingInterface;
 import org.junit.Test;
 
-import java.math.BigInteger;
-
+import static me.gben.matchers.Matchers.and;
 import static me.gben.matchers.Matchers.any;
 import static me.gben.matchers.Matchers.anyInteger;
 import static me.gben.matchers.Matchers.anyString;
+import static me.gben.matchers.Matchers.contains;
 import static me.gben.matchers.Matchers.eq;
 import static me.gben.matchers.Matchers.ge;
 import static me.gben.matchers.Matchers.gt;
 import static me.gben.matchers.Matchers.le;
 import static me.gben.matchers.Matchers.lt;
+import static me.gben.matchers.Matchers.not;
+import static me.gben.matchers.Matchers.or;
 import static me.gben.mocky.Mocky.mock;
 import static me.gben.mocky.Mocky.when;
 import static me.gben.mocky.StartStubbing.doAnswer;
 import static me.gben.mocky.StartStubbing.doReturn;
 import static me.gben.mocky.StartStubbing.doThrow;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 public class MockyTest {
     @Test
@@ -90,16 +93,18 @@ public class MockyTest {
     }
 
     @Test
-    public void pattern_matching_works() {
+    public void pattern_matching_works_implement_factorial() {
         TestingInterface ti = mock(TestingInterface.class);
 
-        when(ti.factorial(eq(BigInteger.ZERO))).thenReturn(BigInteger.ONE);
+        when(ti.factorial(eq(0))).thenReturn(1);
         doAnswer(invoke -> {
-            BigInteger current = invoke.get(0);
-            return current.multiply(ti.factorial(current.subtract(BigInteger.ONE)));
-        }).when(ti).factorial(any(BigInteger.class));
+            Integer current = invoke.get(0);
+            return current * ti.factorial(current - 1);
+        }).when(ti).factorial(gt(0));
+        doThrow(IllegalArgumentException.class).when(ti).factorial(lt(0));
 
-        assertEquals(BigInteger.valueOf(120), ti.factorial(BigInteger.valueOf(5)));
+        assertEquals(Integer.valueOf(120), ti.factorial(5));
+        assertThrows(IllegalArgumentException.class, () -> ti.factorial(-1));
     }
 
     @Test
@@ -114,14 +119,14 @@ public class MockyTest {
     public void pattern_matching_tail_recursion() {
         TestingInterface ti = mock(TestingInterface.class);
 
-        doAnswer(invoke -> invoke.get(0)).when(ti).factorial(any(), eq(BigInteger.ZERO));
+        doAnswer(invoke -> invoke.get(0)).when(ti).factorial(gt(0), eq(0));
         doAnswer(invoke -> {
-            BigInteger acc = invoke.get(0);
-            BigInteger elem = invoke.get(1);
-            return ti.factorial(acc.multiply(elem), elem.subtract(BigInteger.ONE));
-        }).when(ti).factorial(any(), gt(BigInteger.ZERO));
+            Integer acc = invoke.get(0);
+            Integer elem = invoke.get(1);
+            return ti.factorial(acc * elem, elem - 1);
+        }).when(ti).factorial(gt(0), gt(0));
 
-        assertEquals(BigInteger.valueOf(120), ti.factorial(BigInteger.ONE, BigInteger.valueOf(5)));
+        assertEquals(Integer.valueOf(120), ti.factorial(1, 5));
     }
 
     @Test
@@ -162,5 +167,32 @@ public class MockyTest {
         TestingInterface ti = mock(TestingInterface.class);
 
         assertThrows(IllegalStateException.class, () -> when(ti.test2("SomeValue", eq("Other"))));
+    }
+
+    @Test
+    public void string_contains_mock_test() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4(contains("A"))).thenReturn("PartA");
+        when(ti.test4(contains("B"))).thenReturn("PartB");
+
+        assertEquals("PartA", ti.test4("ACDE"));
+        assertEquals("PartB", ti.test4("BCDE"));
+    }
+
+    @Test
+    public void test_with_conditional() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4(or(lt(-10), gt(10))))
+                .thenReturn("Out range!");
+        when(ti.test4(and(ge(-10), le(10))))
+                .thenReturn("In range!");
+        when(ti.test4(not(anyInteger())))
+                .thenReturn("Not an integer!");
+
+        assertEquals("Out range!", ti.test4(100));
+        assertEquals("In range!", ti.test4(0));
+        assertEquals("Not an integer!", ti.test4("AnyValue"));
     }
 }

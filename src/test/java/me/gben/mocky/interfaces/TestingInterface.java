@@ -10,9 +10,9 @@ public interface TestingInterface {
     String test3(PolyType polyType);
     String test4(Object anyValue);
 
-    BigInteger factorial(BigInteger n);
+    Integer factorial(Integer n);
 
-    BigInteger factorial(BigInteger acc, BigInteger n);
+    Integer factorial(Integer acc, Integer n);
 
     String numberCompare(Integer ge);
 }

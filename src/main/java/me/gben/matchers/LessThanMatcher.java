@@ -1,17 +1,12 @@
 package me.gben.matchers;
 
-public class LessThanMatcher<U extends Number & Comparable> implements MatcherDetail<U> {
-    private final U basis;
-
-    public LessThanMatcher(U lessThan) {
-        this.basis = lessThan;
+public class LessThanMatcher<T extends Number & Comparable<T>> extends NumericMatcher<T> {
+    public LessThanMatcher(T lt) {
+        super(lt);
     }
 
     @Override
-    public boolean test(U value) {
-        if (value == null) {
-            return false;
-        }
+    public boolean compare(T value) {
         return value.compareTo(basis) < 0;
     }
 }
