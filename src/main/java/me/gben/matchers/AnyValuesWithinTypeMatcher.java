@@ -11,7 +11,7 @@ public class AnyValuesWithinTypeMatcher<T> implements MatcherDetail<T> {
     }
 
     @Override
-    public boolean test(T value) {
+    public boolean test(Object value) {
         return value != null && this.clazz.isAssignableFrom(value.getClass());
     }
 }

@@ -13,7 +13,7 @@ public class ExactMatcher<T> implements MatcherDetail<T> {
     }
 
     @Override
-    public boolean test(T value) {
+    public boolean test(Object value) {
         return Objects.equals(this.value, value);
     }
 }
