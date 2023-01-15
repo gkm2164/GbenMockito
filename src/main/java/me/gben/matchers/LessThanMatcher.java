@@ -1,5 +1,8 @@
 package me.gben.matchers;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = false)
 public class LessThanMatcher<T extends Number & Comparable<T>> extends NumericMatcher<T> {
     public LessThanMatcher(T lt) {
         super(lt);

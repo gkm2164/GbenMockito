@@ -1,5 +1,8 @@
 package me.gben.matchers;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = false)
 public class GreaterOrEqualMatcher<T extends Number & Comparable<T>> extends NumericMatcher<T> {
 
     public GreaterOrEqualMatcher(T ge) {
