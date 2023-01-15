@@ -1,5 +1,8 @@
 package me.gben.matchers;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class NotMatcher<T> implements MatcherDetail<T> {
     private final MatcherDetail<T> matcher;
 

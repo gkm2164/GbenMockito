@@ -1,9 +1,7 @@
 package me.gben.matchers;
 
-import java.util.Stack;
-
 public class Matchers {
-    public static Stack<MatcherDetail<?>> recordedMatcher = new Stack<>();
+    public static RecordedMatcherPool recordedMatcher = new RecordedMatcherPool();
 
     public static <T> T any() {
         recordedMatcher.push(new AnyMatcher<T>());
@@ -40,27 +38,27 @@ public class Matchers {
         return null;
     }
 
-    public static <T extends Number & Comparable<T>, U extends Number & Comparable<U>> T gt(U gt) {
+    public static <T extends Number & Comparable<T>> T gt(T gt) {
         recordedMatcher.push(new GreaterThanMatcher<>(gt));
         return null;
     }
 
-    public static <T> T or(T left, T right) {
-        MatcherDetail<T> leftMatcher = (MatcherDetail<T>) recordedMatcher.pop();
-        MatcherDetail<T> rightMatcher = (MatcherDetail<T>) recordedMatcher.pop();
+    public static <T, U, V> T or(U left, V right) {
+        MatcherDetail<U> leftMatcher = recordedMatcher.pop();
+        MatcherDetail<V> rightMatcher = recordedMatcher.pop();
         recordedMatcher.push(new OrMatcher<>(leftMatcher, rightMatcher));
         return null;
     }
 
     public static <T, U> T not(U toNegate) {
-        MatcherDetail<T> matcher = (MatcherDetail<T>)recordedMatcher.pop();
+        MatcherDetail<U> matcher = recordedMatcher.pop();
         recordedMatcher.push(new NotMatcher<>(matcher));
         return null;
     }
 
-    public static <T> T and(T left, T right) {
-        MatcherDetail<T> leftMatcher = (MatcherDetail<T>) recordedMatcher.pop();
-        MatcherDetail<T> rightMatcher = (MatcherDetail<T>) recordedMatcher.pop();
+    public static <T, U, V> T and(U left, V right) {
+        MatcherDetail<U> leftMatcher =  recordedMatcher.pop();
+        MatcherDetail<V> rightMatcher = recordedMatcher.pop();
         recordedMatcher.push(new AndMatcher<>(leftMatcher, rightMatcher));
         return null;
     }
