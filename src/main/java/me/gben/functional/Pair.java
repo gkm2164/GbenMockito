@@ -2,9 +2,7 @@ package me.gben.functional;
 
 import lombok.Data;
 
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Data

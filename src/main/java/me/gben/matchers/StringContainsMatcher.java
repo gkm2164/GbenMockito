@@ -1,5 +1,8 @@
 package me.gben.matchers;
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode
 public class StringContainsMatcher implements MatcherDetail<String> {
     private final String part;
 

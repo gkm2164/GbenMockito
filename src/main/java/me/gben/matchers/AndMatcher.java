@@ -1,10 +1,13 @@
 package me.gben.matchers;
 
-public class AndMatcher<T> implements MatcherDetail<T> {
-    private final MatcherDetail<T> left;
-    private final MatcherDetail<T> right;
+import lombok.EqualsAndHashCode;
 
-    public AndMatcher(MatcherDetail<T> left, MatcherDetail<T> right) {
+@EqualsAndHashCode
+public class AndMatcher<T> implements MatcherDetail<T> {
+    private final MatcherDetail<?> left;
+    private final MatcherDetail<?> right;
+
+    public AndMatcher(MatcherDetail<?> left, MatcherDetail<?> right) {
         this.left = left;
         this.right = right;
     }
