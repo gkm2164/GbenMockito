@@ -21,13 +21,9 @@ public class MockyInterceptor {
                          Method invokedMethod,
                          Object[] arguments,
                          MatcherDetail<?>[] matchers) throws Throwable {
-        String methodName = invokedMethod.getName();
-        Class<?>[] argumentsTypes = invokedMethod.getParameterTypes();
         OnGoingStubbing<?> onGoingStubbing = new OnGoingStubbing<>(
-                methodName,
-                invokedMethod,
-                arguments,
                 mock.getClass(),
+                invokedMethod,
                 matchers);
 
         List<OnGoingStubbing<?>> outputList = onGoingStubbingPool.stream()

@@ -12,23 +12,17 @@ import static me.gben.functional.Pair.func;
 
 public class OnGoingStubbing<T> {
     private final Class<?> attachedClass;
-    private final String methodName;
     private final Method invokeMethod;
-    private final Object[] arguments;
-    private final MatcherDetail[] matcherDetails;
+    private final MatcherDetail<?>[] matcherDetails;
     private Instant latestTimestamp;
     private ThrowableFunction<InvokeArgument, Object> result;
 
     public OnGoingStubbing(
-            String methodName,
-            Method invokeMethod,
-            Object[] arguments,
             Class<?> attachedClass,
+            Method invokeMethod,
             MatcherDetail<?>[] matcherDetails
     ) {
-        this.methodName = methodName;
         this.invokeMethod = invokeMethod;
-        this.arguments = arguments;
         this.matcherDetails = matcherDetails;
         this.attachedClass = attachedClass;
         this.latestTimestamp = Instant.now();
@@ -39,6 +33,7 @@ public class OnGoingStubbing<T> {
                 .allMatch(func(MatcherDetail::test));
     }
 
+    @SuppressWarnings("unchecked")
     public void thenAnswer(ThrowableFunction<InvokeArgument, ?> supplier) {
         this.result = (ThrowableFunction<InvokeArgument, Object>) supplier;
     }
@@ -57,7 +52,6 @@ public class OnGoingStubbing<T> {
         if (o == null || getClass() != o.getClass()) return false;
         OnGoingStubbing<?> that = (OnGoingStubbing<?>) o;
         return Objects.equals(attachedClass, that.attachedClass)
-                && Objects.equals(methodName, that.methodName)
                 && Objects.equals(invokeMethod, that.invokeMethod);
     }
 

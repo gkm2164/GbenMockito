@@ -17,6 +17,7 @@ import static me.gben.matchers.Matchers.le;
 import static me.gben.matchers.Matchers.lt;
 import static me.gben.matchers.Matchers.not;
 import static me.gben.matchers.Matchers.or;
+import static me.gben.matchers.Matchers.regex;
 import static me.gben.mocky.Mocky.mock;
 import static me.gben.mocky.Mocky.when;
 import static me.gben.mocky.StartStubbing.doAnswer;
@@ -194,5 +195,15 @@ public class MockyTest {
         assertEquals("Out range!", ti.test4(100));
         assertEquals("In range!", ti.test4(0));
         assertEquals("Not an integer!", ti.test4("AnyValue"));
+    }
+
+    @Test
+    public void test_with_regex() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4(or(regex("3+"), regex("4+")))).thenReturn("Matches with regex!");
+
+        assertEquals("Matches with regex!", ti.test4("3333"));
+        assertEquals("Matches with regex!", ti.test4("4444"));
     }
 }
