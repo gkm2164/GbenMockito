@@ -192,9 +192,21 @@ public class MockyTest {
         when(ti.test4(not(anyInteger())))
                 .thenReturn("Not an integer!");
 
+
         assertEquals("Out range!", ti.test4(100));
         assertEquals("In range!", ti.test4(0));
         assertEquals("Not an integer!", ti.test4("AnyValue"));
+    }
+
+    @Test
+    public void test_with_complex_condition() {
+        TestingInterface ti = mock(TestingInterface.class);
+
+        when(ti.test4(or(and(contains("A"), contains("B")), and(contains("C"), contains("D")))))
+                .thenReturn("Complex condition");
+
+        assertEquals("Complex condition", ti.test4("AB"));
+        assertEquals("Complex condition", ti.test4("CD"));
     }
 
     @Test
