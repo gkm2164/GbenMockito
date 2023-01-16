@@ -204,9 +204,12 @@ public class MockyTest {
 
         when(ti.test4(or(and(contains("A"), contains("B")), and(contains("C"), contains("D")))))
                 .thenReturn("Complex condition");
+        when(ti.test4(any(Number.class)))
+                .thenReturn("Number type is given");
 
         assertEquals("Complex condition", ti.test4("AB"));
         assertEquals("Complex condition", ti.test4("CD"));
+        assertEquals("Number type is given", ti.test4(100));
     }
 
     @Test
