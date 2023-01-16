@@ -2,6 +2,7 @@ package me.gben.mocky;
 
 import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
+import org.objenesis.ObjenesisStd;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -53,7 +54,15 @@ public class MockyInterceptor {
                     })
                     .orElseGet(() -> {
                         onGoingStubbingPool.push(onGoingStubbing);
-                        return invokedMethod.getDefaultValue();
+                        Class<?> cls = invokedMethod.getReturnType();
+                        if (cls.isPrimitive()) {
+                            if (boolean.class.isAssignableFrom(cls)) {
+                                return false;
+                            } else if (void.class.isAssignableFrom(cls)) {
+                                return null;
+                            }
+                        }
+                        return new ObjenesisStd().newInstance(invokedMethod.getReturnType());
                     });
         } catch (RuntimeException e) {
             if (e.getCause() != null) {
