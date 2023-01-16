@@ -1,5 +1,7 @@
 package me.gben.matchers;
 
+import org.intellij.lang.annotations.Language;
+
 public class Matchers {
     public static RecordedMatcherPool recordedMatcher = new RecordedMatcherPool();
 
@@ -10,12 +12,17 @@ public class Matchers {
 
     public static String anyString() {
         recordedMatcher.push(new AnyValuesWithinTypeMatcher<>(String.class));
-        return "";
+        return null;
     }
 
     public static String contains(String part) {
         recordedMatcher.push(new StringContainsMatcher(part));
-        return "";
+        return null;
+    }
+
+    public static String regex(@Language("RegExp") String regex) {
+        recordedMatcher.push(new StringRegexMatcher(regex));
+        return null;
     }
 
     public static int anyInteger() {
@@ -43,6 +50,7 @@ public class Matchers {
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static <T, U, V> T or(U left, V right) {
         MatcherDetail<U> leftMatcher = recordedMatcher.pop();
         MatcherDetail<V> rightMatcher = recordedMatcher.pop();
@@ -50,12 +58,14 @@ public class Matchers {
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static <T, U> T not(U toNegate) {
         MatcherDetail<U> matcher = recordedMatcher.pop();
         recordedMatcher.push(new NotMatcher<>(matcher));
         return null;
     }
 
+    @SuppressWarnings("unused")
     public static <T, U, V> T and(U left, V right) {
         MatcherDetail<U> leftMatcher =  recordedMatcher.pop();
         MatcherDetail<V> rightMatcher = recordedMatcher.pop();
