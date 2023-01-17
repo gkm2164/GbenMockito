@@ -1,29 +1,26 @@
 package me.gben.matchers;
 
-import lombok.EqualsAndHashCode;
+abstract class NumericMatcher<T extends Number & Comparable<T>> implements MatcherDetail<T> {
+  protected final T basis;
 
-@EqualsAndHashCode
-public abstract class NumericMatcher<T extends Number & Comparable<T>> implements MatcherDetail<T> {
-    protected final T basis;
+  public NumericMatcher(T basis) {
+    this.basis = basis;
+  }
 
-    public NumericMatcher(T basis) {
-        this.basis = basis;
+  @Override
+  public final boolean test(Object value) {
+    if (value == null) {
+      return false;
     }
 
-    @Override
-    public final boolean test(Object value) {
-        if (value == null) {
-            return false;
-        }
-
-        if (!basis.getClass().isAssignableFrom(value.getClass())) {
-            return false;
-        }
-
-        @SuppressWarnings("unchecked")
-        T val = (T)value;
-        return compare(val);
+    if (!basis.getClass().isAssignableFrom(value.getClass())) {
+      return false;
     }
 
-    public abstract boolean compare(T value);
+    @SuppressWarnings("unchecked")
+    T val = (T) value;
+    return compare(val);
+  }
+
+  public abstract boolean compare(T value);
 }
