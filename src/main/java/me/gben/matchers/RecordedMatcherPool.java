@@ -10,7 +10,9 @@ public class RecordedMatcherPool {
     }
 
     public <T> T pop() {
-        return (T)stack.pop();
+        @SuppressWarnings("unchecked")
+        T ret = (T)stack.pop();
+        return ret;
     }
 
     public int size() {

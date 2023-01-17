@@ -1,5 +1,6 @@
 package me.gben.mocky;
 
+import com.google.common.collect.ImmutableMap;
 import me.gben.functional.ThrowableFunction;
 import me.gben.matchers.MatcherDetail;
 import org.objenesis.ObjenesisStd;
@@ -7,6 +8,7 @@ import org.objenesis.ObjenesisStd;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,11 +58,10 @@ public class MockyInterceptor {
                         onGoingStubbingPool.push(onGoingStubbing);
                         Class<?> cls = invokedMethod.getReturnType();
                         if (cls.isPrimitive()) {
-                            if (boolean.class.isAssignableFrom(cls)) {
-                                return false;
-                            } else if (void.class.isAssignableFrom(cls)) {
+                            if (void.class.isAssignableFrom(cls)) {
                                 return null;
                             }
+                            return defaultValue(cls);
                         }
                         return new ObjenesisStd().newInstance(invokedMethod.getReturnType());
                     });
@@ -70,6 +71,23 @@ public class MockyInterceptor {
             }
             throw e;
         }
+    }
+
+    private static final Map<Class<?>, Object> defaultValueMap = ImmutableMap.<Class<?>, Object>builder()
+            .put(int.class, 0)
+            .put(long.class, 0L)
+            .put(char.class, '\0')
+            .put(short.class, 0)
+            .put(float.class, 0.0f)
+            .put(double.class, 0.0)
+            .put(byte.class, 0)
+            .put(boolean.class, false)
+            .build();
+    private static Object defaultValue(Class<?> cls) {
+        if (!defaultValueMap.containsKey(cls)) {
+            throw new IllegalArgumentException(cls + " is not primitive type!");
+        }
+        return defaultValueMap.get(cls);
     }
 
     public void setLatestValue(ThrowableFunction<InvokeArgument, ?> latestValue) {

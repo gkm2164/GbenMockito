@@ -20,7 +20,9 @@ public abstract class NumericMatcher<T extends Number & Comparable<T>> implement
             return false;
         }
 
-        return compare((T)value);
+        @SuppressWarnings("unchecked")
+        T val = (T)value;
+        return compare(val);
     }
 
     public abstract boolean compare(T value);

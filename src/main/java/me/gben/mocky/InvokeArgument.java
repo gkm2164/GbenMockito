@@ -11,6 +11,8 @@ public class InvokeArgument {
     }
 
     public <U> U get(int n) {
-        return (U)this.thisList.get(n);
+        @SuppressWarnings("unchecked")
+        U ret = (U)this.thisList.get(n);
+        return ret;
     }
 }
