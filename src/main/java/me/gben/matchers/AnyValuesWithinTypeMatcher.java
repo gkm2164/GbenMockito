@@ -2,13 +2,8 @@ package me.gben.matchers;
 
 import lombok.EqualsAndHashCode;
 
-/**
- * this is to restrict any matchers with specific types.
- *
- * @param <T> type of actual value.
- */
 @EqualsAndHashCode
-public class AnyValuesWithinTypeMatcher<T> implements MatcherDetail<T> {
+class AnyValuesWithinTypeMatcher<T> implements MatcherDetail<T> {
   private final Class<T> clazz;
 
   public AnyValuesWithinTypeMatcher(Class<T> clazz) {

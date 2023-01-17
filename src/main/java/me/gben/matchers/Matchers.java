@@ -69,9 +69,9 @@ public class Matchers {
    * @return null
    */
   @SuppressWarnings("unused")
-  public static <T, U, V> T or(U left, V right) {
-    MatcherDetail<U> leftMatcher = recordedMatcher.pop();
-    MatcherDetail<V> rightMatcher = recordedMatcher.pop();
+  public static <T> T or(T left, T right) {
+    MatcherDetail<T> leftMatcher = recordedMatcher.pop();
+    MatcherDetail<T> rightMatcher = recordedMatcher.pop();
     recordedMatcher.push(new OrMatcher<>(leftMatcher, rightMatcher));
     return null;
   }
@@ -102,9 +102,9 @@ public class Matchers {
    * @return null, but, will push matchers inside recorded matchers.
    */
   @SuppressWarnings("unused")
-  public static <T, U, V> T and(U left, V right) {
-    MatcherDetail<U> leftMatcher =  recordedMatcher.pop();
-    MatcherDetail<V> rightMatcher = recordedMatcher.pop();
+  public static <T> T and(T left, T right) {
+    MatcherDetail<T> leftMatcher =  recordedMatcher.pop();
+    MatcherDetail<T> rightMatcher = recordedMatcher.pop();
     recordedMatcher.push(new AndMatcher<>(leftMatcher, rightMatcher));
     return null;
   }
