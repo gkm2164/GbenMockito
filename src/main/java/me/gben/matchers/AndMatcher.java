@@ -2,17 +2,12 @@ package me.gben.matchers;
 
 import lombok.EqualsAndHashCode;
 
-/**
- * Use of this matchers is to combine 2 different matchers into 1 single condition.
- *
- * @param <T> value's type
- */
 @EqualsAndHashCode
-public class AndMatcher<T> implements MatcherDetail<T> {
-  private final MatcherDetail<?> left;
-  private final MatcherDetail<?> right;
+class AndMatcher<T> implements MatcherDetail<T> {
+  private final MatcherDetail<T> left;
+  private final MatcherDetail<T> right;
 
-  public AndMatcher(MatcherDetail<?> left, MatcherDetail<?> right) {
+  public AndMatcher(MatcherDetail<T> left, MatcherDetail<T> right) {
     this.left = left;
     this.right = right;
   }
