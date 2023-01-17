@@ -14,6 +14,7 @@ public class EqualsMatcher<T> implements MatcherDetail<T> {
   public EqualsMatcher(T value) {
     this.value = value;
   }
+
   @Override
   public boolean test(Object value) {
     return this.value.equals(value);
